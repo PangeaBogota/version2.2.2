@@ -95,8 +95,8 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 		}
 		$scope.calcularTotalCantidad();
 	}
-	$scope.calcularTotalCantidad=function(){
-
+	$scope.calcularTotalCantidad=function()
+	{
 		$scope.cantidadrefererencia=0;
 		
 		for (var i = 0;i<$scope.tallas.length;i++) {
@@ -111,9 +111,49 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 			}
 		}
 	}
+	$scope.calcularDireferenciaTallasCalor=function()
+	{
+		var cantidad=0;
+		for (var a=0;a<$scope.tallas.length;a++) {
+			for (var i = 0;i<$scope.tallas[a].detalle2.length;i++) {
+			cantidad+=$scope.tallas[a].detalle2[i].cantidad;
+			}
+			var cantidadtalla=($scope.tallas[a].cantidad*12);
+			if (cantidadtalla==0) {
+				$scope.tallas[a].estadoextension2=3;		
+				return;
+			}
+			if (cantidadtalla==cantidad) {
+				$scope.tallas[a].estadoextension2=1;		
+			}
+			else
+			{
+				$scope.tallas[a].estadoextension2=2;		
+			}
+		}
+		
+	}
+	$scope.calcularDireferenciaTallaColor=function(indice)
+	{
+		var cantidad=0;
+		for (var i = 0;i<$scope.tallas[indice].detalle2.length;i++) {
+			cantidad+=$scope.tallas[indice].detalle2[i].cantidad;
+		}
+		var cantidadtalla=($scope.tallas[indice].cantidad*12);
+		if (cantidadtalla==0) {
+			$scope.tallas[indice].estadoextension2=3;		
+			return;
+		}
+		if (cantidadtalla==cantidad) {
+			$scope.tallas[indice].estadoextension2=1;		
+		}
+		else
+		{
+			$scope.tallas[indice].estadoextension2=2;		
+		}
+	}
 	$scope.cantidadTalla=function(talla,accion,stock)
 	{
-		debugger
 		if (accion=="restar") {
 			for (var i = 0;i<$scope.tallas.length;i++) {
 
@@ -144,7 +184,8 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 						$scope.tallas[i].estadoextension2=3;
 					}else
 					{
-						$scope.tallas[i].estadoextension2=2;	
+						$scope.calcularDireferenciaTallaColor(i);
+						//$scope.tallas[i].estadoextension2=2;	
 					}
 					if ($scope.tallas[i].cantidad>0) {
 						
@@ -185,7 +226,8 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 						//}
 					}
 					$scope.AgregarColoresMasivoTalla(talla);
-					$scope.tallas[i].estadoextension2=2;
+					$scope.calcularDireferenciaTallaColor(i);
+					//$scope.tallas[i].estadoextension2=2;
 					
 				}
 				$scope.cantidadrefererencia+=$scope.tallas[i].cantidad;
@@ -1500,7 +1542,6 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 				if (CantidadTalla>0) {
 					$scope.tallas[InidicadorArray].detalle2=elem;
 				}
-				debugger
 				if (CantidadTalla % 1 == 0 && CantidadTalla>0 && ValidacionEstadoCompleto) {
 					
 					if (ContadorColor==(parseInt(CantidadTalla.toString())*12)) {
@@ -1532,7 +1573,7 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 				
 
 				
-				
+				$scope.calcularDireferenciaTallasCalor();
 			})			
 		}
 	}
@@ -1550,32 +1591,44 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 			CRUD.selectAllinOne("select a.*,0 as cantidad,'"+CantidadBase+"' as cantidadextension1,"+i+" as  IndicadorArray, d.rgba from erp_items_extenciones a inner join erp_item_extencion2_detalle d on d.rowid_erp=a.extencionDetalle2ID  where a.itemID='"+$scope.tallas[i].itemID+"'  and  a.extencionDetalle1ID='"+$scope.tallas[i].talla+"' order by extenciondetalle2id ",function(elem){
 				if (elem.length>0) {
 					var CantidadTalla=0;
-				var InidicadorArray=0;
-				var ContadorColor=0;
-				var ValidacionEstadoCompleto=true;
-				for (var t =0;t< elem.length;t++) {
-					InidicadorArray=elem[t].IndicadorArray;
-					CantidadTalla=elem[t].cantidadextension1;
-					for (var x=0;x<$scope.ColorMasivo.length;x++) {
-						if (elem[t].extencionDetalle2ID==$scope.ColorMasivo[x].extencionDetalle2ID) {
-							if (CantidadTalla % 1 == 0) {
-								elem[t].cantidad=$scope.ColorMasivo[x].cantidad*CantidadTalla;
-								ContadorColor+=$scope.ColorMasivo[x].cantidad*CantidadTalla;
-							}
-							else
-							{
-								ValidacionEstadoCompleto=false;
-								CantidadTalla-=0.5
-								elem[t].cantidad=$scope.ColorMasivo[x].cantidad*CantidadTalla;
-								ContadorColor+=$scope.ColorMasivo[x].cantidad*CantidadTalla;
-							}
-						}	
+					var InidicadorArray=0;
+					var ContadorColor=0;
+					var ValidacionEstadoCompleto=true;
+					debugger
+					InidicadorArray=elem[0].IndicadorArray;
+					CantidadTalla=elem[0].cantidadextension1;
+					for (var t =0;t< elem.length;t++) {
+						
+						for (var x=0;x<$scope.ColorMasivo.length;x++) {
+							if (elem[t].extencionDetalle2ID==$scope.ColorMasivo[x].extencionDetalle2ID) {
+								if (CantidadTalla % 1 == 0) {
+									elem[t].cantidad=$scope.ColorMasivo[x].cantidad*CantidadTalla;
+									ContadorColor+=$scope.ColorMasivo[x].cantidad*CantidadTalla;
+								}
+								else
+								{
+									ValidacionEstadoCompleto=false;
+									//CantidadTalla-=0.5
+									elem[t].cantidad=$scope.ColorMasivo[x].cantidad*(CantidadTalla-0.5);
+									ContadorColor+=$scope.ColorMasivo[x].cantidad*(CantidadTalla-0.5);
+								}
+							}	
+						}
 					}
-				}
-
-				if (CantidadTalla % 1 == 0 && CantidadTalla>0 && ValidacionEstadoCompleto) {
-					if (ContadorColor==(parseInt(CantidadTalla.toString())*12)) {
-						$scope.tallas[InidicadorArray].estadoextension2=1;
+					debugger
+					if (CantidadTalla % 1 == 0 && CantidadTalla>0 && ValidacionEstadoCompleto) {
+						if (ContadorColor==(parseInt(CantidadTalla.toString())*12)) {
+							$scope.tallas[InidicadorArray].estadoextension2=1;
+						}
+						else
+						{
+							if (CantidadTalla==0) {
+								$scope.tallas[InidicadorArray].estadoextension2=3;	
+							}else
+							{
+								$scope.tallas[InidicadorArray].estadoextension2=2;		
+							}	
+						}
 					}
 					else
 					{
@@ -1583,23 +1636,13 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 							$scope.tallas[InidicadorArray].estadoextension2=3;	
 						}else
 						{
-							$scope.tallas[InidicadorArray].estadoextension2=2;		
-						}	
+							$scope.tallas[InidicadorArray].estadoextension2=2;	
+						}
 					}
-				}
-				else
-				{
-					if (CantidadTalla==0) {
-						$scope.tallas[InidicadorArray].estadoextension2=3;	
-					}else
-					{
-						$scope.tallas[InidicadorArray].estadoextension2=2;	
-					}
-				}
-				ContadorColor=0;
-				if (CantidadTalla>0) {
-					$scope.tallas[InidicadorArray].detalle2=elem;
-				}	
+					ContadorColor=0;
+					if (CantidadTalla>0) {
+						$scope.tallas[InidicadorArray].detalle2=elem;
+					}	
 				}
 				
 				
