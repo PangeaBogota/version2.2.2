@@ -43,9 +43,12 @@ app_angular.controller('sessionController',['bootbox','Conexion','$scope','$loca
     var meses = new Array ("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
     var diasSemana = new Array("Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado");
     $scope.sessiondate=JSON.parse(window.localStorage.getItem("CUR_USER"));
-    $scope.nombreUsuario=$scope.sessiondate.nombre_completo.split(' ');
-    $scope.nombreUsuario=$scope.nombreUsuario[$scope.nombreUsuario.length-1]
-    $scope.nombreUsuario=ucWords($scope.nombreUsuario);
+    if ($scope.sessiondate!=undefined) {
+        $scope.nombreUsuario=$scope.sessiondate.nombre_completo.split(' ');
+        $scope.nombreUsuario=$scope.nombreUsuario[$scope.nombreUsuario.length-1]
+        $scope.nombreUsuario=ucWords($scope.nombreUsuario);
+    }
+    
     $scope.pedidos=[];
     $scope.actividades=[];
     $scope.status=[];
