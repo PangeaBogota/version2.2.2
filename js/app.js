@@ -40,7 +40,12 @@ app_angular.config(['$routeProvider',//'$locationProvider',
 
 //CONTROLADOR DE GENERAL
 app_angular.controller('sessionController',['bootbox','Conexion','$scope','$location','$http','$route', '$routeParams', 'Factory' ,function (bootbox,Conexion, $scope, $location, $http,$route, $routeParams, Factory) {
+    var meses = new Array ("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
+    var diasSemana = new Array("Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado");
     $scope.sessiondate=JSON.parse(window.localStorage.getItem("CUR_USER"));
+    $scope.nombreUsuario=$scope.sessiondate.nombre_completo.split(' ');
+    $scope.nombreUsuario=$scope.nombreUsuario[$scope.nombreUsuario.length-1]
+    $scope.nombreUsuario=ucWords($scope.nombreUsuario);
     $scope.pedidos=[];
     $scope.actividades=[];
     $scope.status=[];
@@ -49,7 +54,26 @@ app_angular.controller('sessionController',['bootbox','Conexion','$scope','$loca
     $scope.errorAlerta.banderaPedido=0;
     $scope.errorAlerta.bandera=0;
     $scope.detalle_pedidos_detalle=[];
-
+    function ucWords(string){
+     var arrayWords;
+     var returnString = "";
+     var len;
+     arrayWords = string.split(" ");
+     len = arrayWords.length;
+     for(i=0;i < len ;i++){
+      if(i != (len-1)){
+       returnString = returnString+ucFirst(arrayWords[i])+" ";
+      }
+      else{
+       returnString = returnString+ucFirst(arrayWords[i]);
+      }
+     }
+     return returnString;
+    }
+    function ucFirst(string){
+     return string.substr(0,1).toUpperCase()+string.substr(1,string.length).toLowerCase();
+    }
+   
     $scope.executeSync=function()
     {
         $scope.envioDataWeb();
@@ -1413,6 +1437,12 @@ app_angular.controller('sessionController',['bootbox','Conexion','$scope','$loca
                 localStorage.setItem('GRAFICA_DIA_LABEL',JSON.stringify( GRAFICA_DIA_LABEL));
                 localStorage.removeItem('GRAFICA_DIA_CANTIDAD');
                 localStorage.setItem('GRAFICA_DIA_CANTIDAD',JSON.stringify(GRAFICA_DIA_CANTIDAD)); 
+                localStorage.removeItem('FECHA_SINCRONIZACION');
+                var f = new Date();
+                $scope.sessiondate=JSON.parse(window.localStorage.getItem("CUR_USER"));
+                var FechaSincronizacion=f.getHours() + ':'+f.getMinutes() +' '+diasSemana[f.getDay()] + ", " + f.getDate() + " de " + meses[f.getMonth()] + " de " + f.getFullYear();
+                localStorage.setItem('FECHA_SINCRONIZACION',JSON.stringify(FechaSincronizacion)); 
+                ULTIMA_EMPRESA_SINCRONIZADA=$scope.sessiondate.codigo_empresa;
             window.setTimeout(function(){
                 ProcesadoHiden();
                 $route.reload();
@@ -1422,12 +1452,9 @@ app_angular.controller('sessionController',['bootbox','Conexion','$scope','$loca
             
         },6000)
     }
-
 }]);
-
-
 app_angular.controller('appController',['Conexion','$scope','$location','$http', '$routeParams', 'Factory' ,function (Conexion, $scope, $location, $http, $routeParams, Factory) {
-    
+     
     if (window.localStorage.getItem("CUR_USER") == null || window.localStorage.getItem("CUR_USER")==undefined) {
         location.href='login.html';
         return;
@@ -1520,131 +1547,6 @@ app_angular.controller('appController',['Conexion','$scope','$location','$http',
             }
         }
     })
-
-    /*$scope.cantidadTerceros=[];
-    $scope.cantidadTerceros1=[];
-    $scope.cantidadPedidos=[];
-    $scope.cantidadPedidos1=[];
-    $scope.estadisticagrafica=[];
-    $scope.mes1=0;
-    $scope.mes2=0;
-    $scope.mes3=0;
-    $scope.mes4=0;
-    $scope.mes5=0;
-    $scope.mes6=0;
-    $scope.mes11=0;
-    $scope.mes22=0;
-    $scope.mes33=0;
-    $scope.mes44=0;
-    $scope.mes55=0;
-    $scope.mes66=0;
-    $scope.registros=[];
-    $scope.validacion='';
-    $scope.mesActual=$scope.GetMonth();
-    $scope.labels=[];
-    //CRUD.select('SELECT COUNT(*) as cantidad FROM erp_terceros',function(elem){$scope.cantidadTerceros.push(elem);$scope.cantidadTerceros1=$scope.cantidadTerceros[0];})
-    CRUD.select("select count(*) as cantidad from erp_items ",function(elem){console.log(elem.cantidad)})
-    CRUD.select('SELECT COUNT(*) as cantidad FROM t_pedidos',function(elem){$scope.cantidadPedidos.push(elem);$scope.cantidadPedidos1=$scope.cantidadPedidos[0];})
-    var Count1=6;
-    var cont=6;
-    for (var i=1; i<Count1+1;i++) {
-        //console.log(i)
-        var dt = new Date();
-        dt=dt.setMonth(dt.getMonth()+1 - i);
-
-        var dt1=new Date(dt);
-        dt1=$scope.SelectedDate(dt1)
-
-        CRUD.select("select "+cont+" as cont,  '"+dt1+"' as f1,    strftime('%Y-%m', fechacreacion) as date,strftime('%m', fechacreacion) as mes,count(strftime('%m', fechacreacion)) as cantidad,sum(valor_total) as valor_total from t_pedidos  where   strftime('%Y-%m', fechacreacion) = '"+dt1+"' ",
-        function(elem){$scope.estadisticagrafica.push(elem);
-            
-            if (elem.cont==1) {$scope.mes1=elem.valor_total;$scope.mes11=elem.f1;console.log(elem.date)};
-            if (elem.cont==2) {$scope.mes2=elem.valor_total;$scope.mes22=elem.f1;console.log(elem.date)};
-            if (elem.cont==3) {$scope.mes3=elem.valor_total;$scope.mes33=elem.f1};
-            if (elem.cont==4) {$scope.mes4=elem.valor_total;$scope.mes44=elem.f1};
-            if (elem.cont==5) {$scope.mes5=elem.valor_total;$scope.mes55=elem.f1};
-            if (elem.cont==6) {$scope.mes6=elem.valor_total;$scope.mes66=elem.f1};
-            $scope.registros=[[$scope.mes1,$scope.mes2,$scope.mes3,$scope.mes4,$scope.mes5,$scope.mes6]];
-            $scope.labels = [$scope.mes11,$scope.mes22,$scope.mes33,$scope.mes44,$scope.mes55,$scope.mes66]; 
-        })
-        cont--
-    }
-    
-    CRUD.select("select count(*) as cantidad from t_pedidos",function(elem){
-        if (elem.cantidad==0) {
-            $scope.validacion='No fue encontrado Ningun  Pedido'
-        }
-    })
-    $scope.estadisiticaGraficaDiaria=[];
-    $scope.variables=[];
-    $scope.variables.name1=0;
-    $scope.variables.name2=0;
-    $scope.variables.name3=0;
-    $scope.variables.name4=0;
-    $scope.variables.name5=0;
-    $scope.variables.name6=0;
-    $scope.variables.name7=0;
-    $scope.variables.name8=0;
-    $scope.variables.name9=0;
-    $scope.variables.name10=0;
-    $scope.dataGD=[[0,0,0,0,0,0,0,0,0,0]];
-    $scope.labelsGD=[0,0,0,0,0,0,0,0,0,0];
-    var p2=10;
-    for (var i=1;i<11;i++) {
-        var v1 = new Date();
-        var dayOfMonth = v1.getDate();
-        v1=v1.setDate(dayOfMonth +1 - i);
-        
-        dayOfMonth=dayOfMonth+1-i;
-        v1=new Date(v1);
-        v1=$scope.RequestDate(v1)
-        v2=$scope.RequestDay(v1)
-        console.log(v1);
-        var dataprueba="select "+p2+" as cont,  '"+v1+"' as f1,   '"+v2+"' as date,strftime('%m', fechacreacion) as mes,count(strftime('%m', fechacreacion)) as cantidad,sum(valor_total) as valor_total,count(rowid) as dataCount from t_pedidos  where   strftime('%Y-%m-%d', fechacreacion) = '"+v1+"'" ;
-        
-        CRUD.select("select "+p2+" as cont,  '"+v1+"' as f1,   '"+v2+"' as date,strftime('%m', fechacreacion) as mes,count(strftime('%m', fechacreacion)) as cantidad,sum(valor_total) as valor_total,count(rowid) as dataCount from t_pedidos  where   strftime('%Y-%m-%d', fechacreacion) = '"+v1+"' ",function(elem){
-            
-            $scope.estadisiticaGraficaDiaria.push(elem);
-            if (elem.cont==1) {$scope.variables.dia1=elem.dataCount;$scope.variables.name1=elem.date};
-            if (elem.cont==2) {$scope.variables.dia2=elem.dataCount;$scope.variables.name2=elem.date};
-            if (elem.cont==3) {$scope.variables.dia3=elem.dataCount;$scope.variables.name3=elem.date};
-            if (elem.cont==4) {$scope.variables.dia4=elem.dataCount;$scope.variables.name4=elem.date};
-            if (elem.cont==5) {$scope.variables.dia5=elem.dataCount;$scope.variables.name5=elem.date};
-            if (elem.cont==6) {$scope.variables.dia6=elem.dataCount;$scope.variables.name6=elem.date};
-            if (elem.cont==7) {$scope.variables.dia7=elem.dataCount;$scope.variables.name7=elem.date};
-            if (elem.cont==8) {$scope.variables.dia8=elem.dataCount;$scope.variables.name8=elem.date};
-            if (elem.cont==9) {$scope.variables.dia9=elem.dataCount;$scope.variables.name9=elem.date};
-            if (elem.cont==10) {$scope.variables.dia10=elem.dataCount;$scope.variables.name10=elem.date};
-            $scope.dataGD=
-            [[
-                $scope.variables.dia1,
-                $scope.variables.dia2,
-                $scope.variables.dia3,
-                $scope.variables.dia4,
-                $scope.variables.dia5,
-                $scope.variables.dia6,
-                $scope.variables.dia7,
-                $scope.variables.dia8,
-                $scope.variables.dia9
-                ,$scope.variables.dia10
-            ]]
-            $scope.labelsGD=
-            [
-                $scope.variables.name1,
-                $scope.variables.name2,
-                $scope.variables.name3,
-                $scope.variables.name4,
-                $scope.variables.name5,
-                $scope.variables.name6,
-                $scope.variables.name7,
-                $scope.variables.name8,
-                $scope.variables.name9
-                ,$scope.variables.name10
-            ]
-        })   
-        p2--; 
-    }*/
-
     var GRAFICA_DIA_CANTIDAD=JSON.parse(window.localStorage.getItem("GRAFICA_DIA_CANTIDAD"));
     var GRAFICA_DIA_LABEL=JSON.parse(window.localStorage.getItem("GRAFICA_DIA_LABEL"));
     var GRAFICA_MES_CANTIDAD=JSON.parse(window.localStorage.getItem("GRAFICA_MES_CANTIDAD"));
@@ -1655,7 +1557,7 @@ app_angular.controller('appController',['Conexion','$scope','$location','$http',
     $scope.labelsGD=GRAFICA_DIA_LABEL;
     $scope.data = [ [65, 59, 80, 81, 56, 55] ];
     $scope.colours=["#26B99A"];
-    
+    $scope.fechaSincronizacion=window.localStorage.getItem("FECHA_SINCRONIZACION");
    $scope.labels1 = ['2006', '2007', '2008', '2009', '2010', '2011', '2012'];
     $scope.series1 = ['Pedidos'];
 

@@ -894,6 +894,10 @@ app_angular.service('Factory', function ($webSql) {
         "key_user": {
             "type": "INTEGER",
             "null": "NULL"
+        },
+        "ambiente": {
+            "type": "TEXT",
+            "null": "NULL"
         }
     });
 

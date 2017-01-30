@@ -707,4 +707,34 @@
         </div>
         
         <div id="ColoresAgregados" data-toggle="modal" data-target="#Modalcolores"></div>
+
+        <div id="AlertaSincronizacion" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+            <div class="modal-dialog" style="padding-bottom:100px">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="">Alerta Sincronizacion</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div id="testmodal" style="padding: 0px;">
+                            <form id="antoform" class="form-horizontal calender form-label-left" role="form">
+                                <div class="row form-group">
+                                    <div class="col-md-12">
+                                         Desea Realizar la Sincronizacion antes Realizar el Pedido? <br>
+                                         Ultima Actualizacion Realizada {{fechaSincronizacion}}
+                                    </div>
+                                </div>
+                                
+                            </form>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-danger antoclose" id="" style="margin:0px"  data-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-success " id="aceptarsincronizacion" ng-click="sincronizar()" style="margin:0px"  data-dismiss="modal">Sincronizar</button>
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="AlertaSin" data-toggle="modal" data-target="#AlertaSincronizacion"></div>
     </div>

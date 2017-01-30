@@ -430,23 +430,26 @@
                                 
                                 <li class="">
                                     <a class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                        <span class="fa fa-user"></span>  {{sessiondate.nombre_usuario}}  <span class="fa fa-angle-down"></span>
+                                        <span class="fa fa-user"></span> Hola,&nbsp;{{nombreUsuario}}  <span class="fa fa-angle-down"></span>
                                     </a>
                                     <ul class="dropdown-menu dropdown-usermenu animated fadeInDown pull-right">
                                         <li>
-                                            <a  ng-click="confirmarSincronizacion()" >
-                                                <span>Sincronizar</span>
-                                            </a>
+                                            
                                         </li>
                                         <li><a ng-click="cerrarsesion()"><i class="fa fa-sign-out pull-right"></i>Cerrar Sesion</a>
                                         </li>
                                     </ul>
                                 </li>
                                 <li>
-                                        <a id="sync"  ng-click="executeSync()"><i style="font-size:1.5em"  class="fa fa-refresh"></i></a>
-                                    
-                                        
+                                    <a  ng-click="confirmarSincronizacion()" id="sincronizarID" ><i style="font-size:1.5em"  class="fa fa-download"></i>
+                                                <span>Bajar</span>
+                                            </a>
                                 </li>
+                                <li>
+                                        <a   ng-click="executeSync()"><i style="font-size:1.5em"  class="fa fa-upload"></i>
+                                        <span>Subir</span></a>   
+                                </li>
+                                
                             </ul>
 
                             
