@@ -119,7 +119,6 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 	}
 	$scope.calcularDireferenciaTallasCalor=function()
 	{
-		debugger
 		var cantidad=0;
 		for (var a=0;a<$scope.tallas.length;a++) {
 			for (var i = 0;i<$scope.tallas[a].detalle2.length;i++) {
@@ -138,8 +137,7 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 				$scope.tallas[a].estadoextension2=2;		
 			}
 			cantidad=0;
-		}
-		
+		}	
 	}
 	$scope.calcularDireferenciaTallaColor=function(indice)
 	{
@@ -618,6 +616,7 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 			}
 		}
 		$scope.ModalColorOpen=false;
+		$scope.calcularDireferenciaTallasCalor();
 	}
 	$scope.adicionarCantidadDetalle2=function(extension,accion,stock,cantidad){
 		
