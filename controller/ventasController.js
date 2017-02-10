@@ -432,6 +432,7 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 	}
 	$scope.fechachange=0;
 	$scope.fechaentrega=function(fechaEdit){
+		debugger
 		if ($scope.pedidoEditar==1 && $scope.fechachange==0 && fechaEdit!=undefined) {
 			var fechanueva=new Date(fechaEdit);
 			fechanueva.setDate(fechanueva.getDate() + 1);
@@ -442,13 +443,29 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 		var hoy = new Date($scope.dateEntrega);
 		//hoy.setTime(hoy.getTime()+24*60*60*1000);
 		var i=hoy.getDay()
-		if (i==0) {
+		var d = new Date(hoy),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+	    if (month.length < 2) month = '0' + month;
+	    if (day.length < 2) day = '0' + day;
+
+    	var diaSeleccionado= [year, month, day].join('-');
+		/*if (i==0) {
 			Mensajes('No se puede seleccionar un dia festivo','error','');
 			$scope.pedidos.fecha_entrega='';
 			document.getElementById("fecha_entrega").valueAsDate = null;
 			return;
+		}*/
+		for (var i =0;i<DiasFestivos.length;i++) {
+			if (diaSeleccionado==DiasFestivos[i]) {
+				Mensajes('No se puede seleccionar un dia festivo','error','');
+				$scope.pedidos.fecha_entrega='';
+				document.getElementById("fecha_entrega").valueAsDate = null;
+				return;
+			}
 		}
-		
 
 		$scope.pedidos.fecha_solicitud=$scope.CurrentDate();
 		$scope.pedidos.fechacreacion=$scope.CurrentDate();
@@ -1230,7 +1247,6 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 							stringSentencia="";
 							contador=0;
 						}
-						
 					}	
 					if (stringSentencia!="") {
 						CRUD.Updatedynamic(stringSentencia)
@@ -1238,12 +1254,8 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 						stringSentencia="";
 						contador=0;
 					}
-
 				})
-				
 			})
-			
-			
 		})
 		})
 		var a=0;
@@ -1365,19 +1377,35 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 	if ( $scope.terceroDeTercero==undefined || !$scope.terceroDeTercero.includes('p') ) {
 		var hoy = new Date();
 		var i=0;
-		while (i<4) {
+		while (i<3) {
 		  hoy.setTime(hoy.getTime()+24*60*60*1000); // añadimos 1 día
 		  if ( hoy.getDay() != 0)
 			i++;  
 		}
 		var mes=parseInt(hoy.getMonth())+1;
 		var fecha = mes+ '/' +hoy.getDate()+ '/' + hoy.getFullYear();
-		//console.log(fecha);    
 		
+		debugger
 		hoy=new Date(fecha);
-		hoy.setDate(hoy.getDate() + 1);
-		document.getElementById("fecha_entrega").valueAsDate = hoy
-		$scope.dateEntrega=	document.getElementById("fecha_entrega").valueAsDate;
+		//hoy.setDate(hoy.getDate() + 1);
+		var d = new Date(hoy),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+	    if (month.length < 2) month = '0' + month;
+	    if (day.length < 2) day = '0' + day;
+
+    	var diaSeleccionado= [year, month, day].join('-');
+	
+		for (var  i= 0; i < DiasFestivos.length; i++) {
+			if (diaSeleccionado==DiasFestivos[i]) {
+				hoy.setDate(hoy.getDate() + 1);
+			}
+		}
+		debugger
+		document.getElementById("fecha_entrega").valueAsDate = hoy;
+		$scope.dateEntrega=	hoy;
 		$scope.fechaentrega();
 	}
 
@@ -1662,12 +1690,12 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 		}
 	}
 	$scope.sincronizar=function(){
-		debugger
+		
 		$scope.errorAlerta=[];
         $scope.errorAlerta.bandera=0;
         ProcesadoShow();   
         //$scope.EnvioActividades();
-        CRUD.Updatedynamic("update t_pedidos set sincronizado='EnvioCorrecto' where sincronizado='true'");
+        //CRUD.Updatedynamic("update t_pedidos set sincronizado='EnvioCorrecto' where sincronizado='true'");
         window.setTimeout(function(){
             if ($scope.errorAlerta.bandera==1) {
                 Mensajes('Error al Sincronizar, Por favor revise que su conexion sea estable','warning','');
