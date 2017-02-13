@@ -440,7 +440,14 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 			$scope.dateEntrega=	document.getElementById("fecha_entrega").valueAsDate;
 			$scope.fechachange=1;
 		}
+
 		var hoy = new Date($scope.dateEntrega);
+		if ($scope.fechaDefault>hoy) {
+			Mensajes('Fecha minima de Entrega son 3 Dias','error','');
+			$scope.pedidos.fecha_entrega='';
+			document.getElementById("fecha_entrega").valueAsDate = null;
+			return;
+		}
 		//hoy.setTime(hoy.getTime()+24*60*60*1000);
 		var i=hoy.getDay()
 		var d = new Date(hoy),
@@ -1374,36 +1381,34 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 	angular.element('#ui-id-1').mouseover(function (){
 		angular.element('#ui-id-1').show();
 	});
+	$scope.fechaDefault="";
 	if ( $scope.terceroDeTercero==undefined || !$scope.terceroDeTercero.includes('p') ) {
 		var hoy = new Date();
-		var i=0;
-		while (i<3) {
+		var count=0;
+		while (count<3) {
 		  hoy.setTime(hoy.getTime()+24*60*60*1000); // añadimos 1 día
 		  if ( hoy.getDay() != 0)
-			i++;  
-		}
-		var mes=parseInt(hoy.getMonth())+1;
-		var fecha = mes+ '/' +hoy.getDate()+ '/' + hoy.getFullYear();
+		  {
+			//hoy.setDate(hoy.getDate() + 1);
+			var d = new Date(hoy),
+	        month = '' + (d.getMonth() + 1),
+	        day = '' + d.getDate(),
+	        year = d.getFullYear();
+
+		    if (month.length < 2) month = '0' + month;
+		    if (day.length < 2) day = '0' + day;
+
+	    	var diaSeleccionado= [year, month, day].join('-');
 		
-		debugger
-		hoy=new Date(fecha);
-		//hoy.setDate(hoy.getDate() + 1);
-		var d = new Date(hoy),
-        month = '' + (d.getMonth() + 1),
-        day = '' + d.getDate(),
-        year = d.getFullYear();
-
-	    if (month.length < 2) month = '0' + month;
-	    if (day.length < 2) day = '0' + day;
-
-    	var diaSeleccionado= [year, month, day].join('-');
-	
-		for (var  i= 0; i < DiasFestivos.length; i++) {
-			if (diaSeleccionado==DiasFestivos[i]) {
-				hoy.setDate(hoy.getDate() + 1);
+			for (var  i= 0; i < DiasFestivos.length; i++) {
+				if (diaSeleccionado==DiasFestivos[i]) {
+					hoy.setDate(hoy.getDate() + 1);
+				}
 			}
+		  	count++;  
+		  }
 		}
-		debugger
+		$scope.fechaDefault=hoy;
 		document.getElementById("fecha_entrega").valueAsDate = hoy;
 		$scope.dateEntrega=	hoy;
 		$scope.fechaentrega();
