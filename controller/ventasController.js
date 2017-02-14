@@ -443,7 +443,7 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 
 		var hoy = new Date($scope.dateEntrega);
 		if ($scope.fechaDefault>hoy) {
-			Mensajes('Fecha minima de Entrega son 3 Dias','error','');
+			Mensajes('Dias minimos de entrega son 3 Dias','error','');
 			$scope.pedidos.fecha_entrega='';
 			document.getElementById("fecha_entrega").valueAsDate = null;
 			return;
