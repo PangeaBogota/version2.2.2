@@ -551,11 +551,11 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 				if ($scope.item.item_custom1!="SI") {
 					
 					$scope.validacionStock=$scope.itemextension2Detalle[i].cantidad;
-					//if ($scope.validacionStock>stock) {
-					//	$scope.itemextension2Detalle[i].cantidad=0;
-					//	$scope.contadorDetalle2=$scope.contadorDetalle2-$scope.itemextension2Detalle[i].cantidad;
-					//	Mensajes("La Cantidad no puede ser mayor al stock","error","");
-					//}
+					if ($scope.validacionStock>stock && $scope.itemextension2Detalle[i].estadoID==4003) {
+						$scope.itemextension2Detalle[i].cantidad=0;
+						$scope.contadorDetalle2=$scope.contadorDetalle2-$scope.itemextension2Detalle[i].cantidad;
+						Mensajes("La Cantidad no puede ser mayor al stock","error","");
+					}
 					if ($scope.contadorDetalle2>cantidad) {
 						$scope.itemextension2Detalle[i].cantidad=0;
 						$scope.contadorDetalle2=$scope.contadorDetalle2-$scope.itemextension2Detalle[i].cantidad;
@@ -563,11 +563,11 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 					}
 				}else{
 					$scope.validacionStock=$scope.itemextension2Detalle[i].cantidad;
-					//if ($scope.validacionStock>stock) {
-					//	$scope.itemextension2Detalle[i].cantidad=0;
-					//	$scope.contadorDetalle2=$scope.contadorDetalle2-$scope.itemextension2Detalle[i].cantidad;
-					//	Mensajes("La Cantidad no puede ser mayor al stock","error","");
-					//}
+					if ($scope.validacionStock>stock && $scope.itemextension2Detalle[i].estadoID==4003) {
+						$scope.itemextension2Detalle[i].cantidad=0;
+						$scope.contadorDetalle2=$scope.contadorDetalle2-$scope.itemextension2Detalle[i].cantidad;
+						Mensajes("La Cantidad no puede ser mayor al stock","error","");
+					}
 					if ($scope.validacionStock>cantidad) {
 						$scope.itemextension2Detalle[i].cantidad=0;
 						$scope.contadorDetalle2=$scope.contadorDetalle2-$scope.itemextension2Detalle[i].cantidad;
@@ -680,11 +680,11 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 						$scope.itemextension2Detalle[i].cantidad+=1;	
 						$scope.Validarstock=$scope.itemextension2Detalle[i].cantidad;
 						$scope.contadorDetalle2++;	
-						//if ($scope.Validarstock>stock) {
-						//	$scope.itemextension2Detalle[i].cantidad-=1;	
-						//	$scope.contadorDetalle2--;	
-						//	Mensajes("La Cantidad no puede ser mayor al stock","error","");
-						//}
+						if ($scope.Validarstock>stock && $scope.itemextension2Detalle[i].estadoID==4003) {
+							$scope.itemextension2Detalle[i].cantidad-=1;	
+							$scope.contadorDetalle2--;	
+							Mensajes("La Cantidad no puede ser mayor al stock","error","");
+						}
 						if ($scope.itemextension2Detalle[i].cantidad>cantidad) {
 							$scope.itemextension2Detalle[i].cantidad-=1;	
 							$scope.contadorDetalle2--;	
@@ -694,11 +694,12 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 						$scope.itemextension2Detalle[i].cantidad+=1;	
 						$scope.contadorDetalle2++;	
 						$scope.Validarstock=$scope.itemextension2Detalle[i].cantidad;
-						//if ($scope.Validarstock>stock) {
-						//	$scope.itemextension2Detalle[i].cantidad-=1;	
-						//	$scope.contadorDetalle2--;	
-						//	Mensajes("La Cantidad no puede ser mayor al stock","error","");
-						//}
+
+						if ($scope.Validarstock>stock && $scope.itemextension2Detalle[i].estadoID==4003) {
+							$scope.itemextension2Detalle[i].cantidad-=1;	
+							$scope.contadorDetalle2--;	
+							Mensajes("La Cantidad no puede ser mayor al stock","error","");
+						}
 						if ($scope.itemextension2Detalle[i].cantidad>cantidad) {
 							$scope.itemextension2Detalle[i].cantidad-=1;	
 							$scope.contadorDetalle2--;	
@@ -1349,6 +1350,22 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 		}
 		
 	}
+	$scope.MediaDocenaCount=6;
+	$scope.ColorMasivoMedia=[];
+	$scope.TallasMediaDocena=function()
+	{
+		$scope.ModalColorMasivo=true;
+		//$scope.ColorMasivoAnterior=[];
+		//$scope.ColorMasivoAnterior=$scope.ColorMasivo.slice();
+		
+		$('#OpenModalColorMedia').click();
+		if ($scope.ColorMasivoMedia.length==0) {
+			CRUD.select("select distinct a.itemID,a.extencionDetalle2ID,0 as cantidad,d.rgba from erp_items_extenciones a inner join erp_item_extencion2_detalle d on d.rowid_erp=a.extencionDetalle2ID  where itemID='"+$scope.item.rowid_item+"' order by extencionDetalle2ID",function(elem){
+				$scope.ColorMasivoMedia.push(elem);
+				
+			})		
+		}
+	}
 	$scope.ValidacionCabezera=function()
 	{
 		$scope.CambiarTab('3','atras');
@@ -1455,6 +1472,31 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 			}
 		}
 	}
+	$scope.adicionarCantidadColorM=function(color,accion)
+	{
+		if ($scope.MediaDocenaCount==0 && accion=="SUMAR") {
+			Mensajes('Cantidad Maxima Alcanzada','error','');
+			return;
+		}
+		if (accion=="SUMAR") {
+			for (var i =0;i<$scope.ColorMasivoMedia.length;i++) {
+				if ($scope.ColorMasivoMedia[i].extencionDetalle2ID==color) {
+					$scope.ColorMasivoMedia[i].cantidad+=1;
+					$scope.MediaDocenaCount--;
+				}
+			}	
+		}else{
+			for (var i =0;i<$scope.ColorMasivoMedia.length;i++) {
+				if ($scope.ColorMasivoMedia[i].extencionDetalle2ID==color) {
+					if ($scope.ColorMasivoMedia[i].cantidad!=0) {
+						$scope.ColorMasivoMedia[i].cantidad-=1;
+						$scope.MediaDocenaCount++;		
+					}
+					
+				}
+			}
+		}
+	}
 	$scope.ItemModal=[];
 	$scope.ModalItem=function(item){
 		$scope.openmodalBalance=true;
@@ -1550,6 +1592,144 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 		
 		
 	}*/
+	$scope.cantidadColor=function(InidicadorArray)
+	{
+		var Cantidad=0;
+		for (var i = 0; i < $scope.tallas[InidicadorArray].detalle2.length; i++) {
+			Cantidad+=$scope.tallas[InidicadorArray].detalle2[i].cantidad;
+		}
+		return Cantidad;
+	}
+	$scope.AgregarColoresMasivoM=function()
+	{
+		$scope.ModalColorMasivo=false;
+		if ($scope.ColorMasivoMedia.length==0) {
+			return;
+		}
+		for (var i =0; i<$scope.tallas.length;i++ ) {
+			var CantidadBase=$scope.tallas[i].cantidad;
+			if (CantidadBase% 1 != 0) {
+				var cantidadColores=$scope.cantidadColor(i);
+				if (((CantidadBase*12)-cantidadColores)==6) {
+					CRUD.selectAllinOne("select a.*,0 as cantidad,'"+CantidadBase+"' as cantidadextension1,"+i+" as  IndicadorArray, d.rgba from erp_items_extenciones a inner join erp_item_extencion2_detalle d on d.rowid_erp=a.extencionDetalle2ID  where a.itemID='"+$scope.tallas[i].itemID+"'  and  a.extencionDetalle1ID='"+$scope.tallas[i].talla+"' order by extenciondetalle2id ",function(elem){
+						var CantidadTalla=0;
+						var InidicadorArray=0;
+						var ContadorColor=0;
+						var ValidacionEstadoCompleto=true;
+						if (elem.length>0) {
+							InidicadorArray=elem[0].IndicadorArray;
+							CantidadTalla=elem[0].cantidadextension1;	
+							if ($scope.tallas[InidicadorArray].detalle2.length>0) {
+								for (var t =0;t< $scope.tallas[InidicadorArray].detalle2.length;t++) {
+									for (var x=0;x<$scope.ColorMasivoMedia.length;x++) {
+										if ($scope.tallas[InidicadorArray].detalle2[t].extencionDetalle2ID==$scope.ColorMasivoMedia[x].extencionDetalle2ID) {
+											
+											$scope.tallas[InidicadorArray].detalle2[t].cantidad+=$scope.ColorMasivoMedia[x].cantidad;
+											if (elem[t].estadoID==4003 && (($scope.tallas[InidicadorArray].detalle2[t].cantidad+$scope.ColorMasivoMedia[x].cantidad))>elem[t].stock) {
+												elem[t].cantidad=elem[t].stock*1;
+											}
+											else
+											{
+												elem[t].cantidad=$scope.ColorMasivoMedia[x].cantidad;
+											}
+										}	
+									}
+								}
+							}
+							else
+							{
+								for (var t =0;t< elem.length;t++) {
+									for (var x=0;x<$scope.ColorMasivoMedia.length;x++) {
+										if (elem[t].extencionDetalle2ID==$scope.ColorMasivoMedia[x].extencionDetalle2ID) {
+											if (elem[t].estadoID==4003 && (($scope.ColorMasivoMedia[x].cantidad))>elem[t].stock) {
+												elem[t].cantidad=elem[t].stock*1;
+											}
+											else
+											{
+												elem[t].cantidad=$scope.ColorMasivoMedia[x].cantidad;
+											}
+										}	
+									}
+								}
+								if (CantidadTalla>0) {
+									$scope.tallas[InidicadorArray].detalle2=elem;
+								}
+							}
+							
+						}
+						ContadorColor=0;
+						$scope.calcularDireferenciaTallasCalor();
+					})	
+				}
+			}
+		}
+
+	}
+	$scope.AgregarColoresMTalla=function(i)
+	{
+		if ($scope.ColorMasivoMedia.length==0) {
+			return;
+		}
+		var CantidadBase=$scope.tallas[i].cantidad;
+		if (CantidadBase% 1 != 0) {
+			var cantidadColores=$scope.cantidadColor(i);
+			if (((CantidadBase*12)-cantidadColores)==6) {
+				CRUD.selectAllinOne("select a.*,0 as cantidad,'"+CantidadBase+"' as cantidadextension1,"+i+" as  IndicadorArray, d.rgba from erp_items_extenciones a inner join erp_item_extencion2_detalle d on d.rowid_erp=a.extencionDetalle2ID  where a.itemID='"+$scope.tallas[i].itemID+"'  and  a.extencionDetalle1ID='"+$scope.tallas[i].talla+"' order by extenciondetalle2id ",function(elem){
+					debugger
+					var CantidadTalla=0;
+					var InidicadorArray=0;
+					var ContadorColor=0;
+					var ValidacionEstadoCompleto=true;
+					if (elem.length>0) {
+						InidicadorArray=elem[0].IndicadorArray;
+						CantidadTalla=elem[0].cantidadextension1;	
+						if ($scope.tallas[InidicadorArray].detalle2.length>0) {
+							for (var t =0;t< $scope.tallas[InidicadorArray].detalle2.length;t++) {
+								for (var x=0;x<$scope.ColorMasivoMedia.length;x++) {
+									if ($scope.tallas[InidicadorArray].detalle2[t].extencionDetalle2ID==$scope.ColorMasivoMedia[x].extencionDetalle2ID) {
+										
+										
+										if (elem[t].estadoID==4003 && (($scope.tallas[InidicadorArray].detalle2[t].cantidad+$scope.ColorMasivoMedia[x].cantidad))>elem[t].stock) {
+											$scope.tallas[InidicadorArray].detalle2[t].cantidad=elem[t].stock*1;
+										}
+										else
+										{
+											$scope.tallas[InidicadorArray].detalle2[t].cantidad+=$scope.ColorMasivoMedia[x].cantidad;
+										}
+										
+									}	
+								}
+							}
+						}
+						else
+						{
+							for (var t =0;t< elem.length;t++) {
+								for (var x=0;x<$scope.ColorMasivoMedia.length;x++) {
+									if (elem[t].extencionDetalle2ID==$scope.ColorMasivoMedia[x].extencionDetalle2ID) {
+										if (elem[t].estadoID==4003 && (($scope.ColorMasivoMedia[x].cantidad))>elem[t].stock) {
+											elem[t].cantidad=elem[t].stock*1;
+										}
+										else
+										{
+											elem[t].cantidad=$scope.ColorMasivoMedia[x].cantidad;
+										}
+										
+									}	
+								}
+							}
+							if (CantidadTalla>0) {
+								$scope.tallas[InidicadorArray].detalle2=elem;
+							}
+						}
+						
+					}
+					ContadorColor=0;
+					$scope.calcularDireferenciaTallasCalor();
+				})	
+			}
+		}
+
+	}
 	$scope.AgregarColoresMasivo=function()
 	{
 		$scope.ModalColorMasivo=false;
@@ -1559,6 +1739,7 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 		for (var i =0; i<$scope.tallas.length;i++ ) {
 			var CantidadBase=$scope.tallas[i].cantidad;
 			CRUD.selectAllinOne("select a.*,0 as cantidad,'"+CantidadBase+"' as cantidadextension1,"+i+" as  IndicadorArray, d.rgba from erp_items_extenciones a inner join erp_item_extencion2_detalle d on d.rowid_erp=a.extencionDetalle2ID  where a.itemID='"+$scope.tallas[i].itemID+"'  and  a.extencionDetalle1ID='"+$scope.tallas[i].talla+"' order by extenciondetalle2id ",function(elem){
+				debugger
 				var CantidadTalla=0;
 				var InidicadorArray=0;
 				var ContadorColor=0;
@@ -1567,57 +1748,42 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 					InidicadorArray=elem[0].IndicadorArray;
 					CantidadTalla=elem[0].cantidadextension1;	
 					for (var t =0;t< elem.length;t++) {
-					
-					for (var x=0;x<$scope.ColorMasivo.length;x++) {
-						if (elem[t].extencionDetalle2ID==$scope.ColorMasivo[x].extencionDetalle2ID) {
-							if (CantidadTalla % 1 == 0) {
-								elem[t].cantidad=$scope.ColorMasivo[x].cantidad*CantidadTalla;
-								ContadorColor+=$scope.ColorMasivo[x].cantidad*CantidadTalla;
-							}
-							else
-							{
-								ValidacionEstadoCompleto=false;
-								CantidadTalla-=0.5
-								elem[t].cantidad=$scope.ColorMasivo[x].cantidad*CantidadTalla;
-								ContadorColor+=$scope.ColorMasivo[x].cantidad*CantidadTalla;
-							}
-						}	
+						for (var x=0;x<$scope.ColorMasivo.length;x++) {
+							if (elem[t].extencionDetalle2ID==$scope.ColorMasivo[x].extencionDetalle2ID) {
+								if (CantidadTalla % 1 == 0) {
+									if (elem[t].estadoID==4003 && (($scope.ColorMasivo[x].cantidad*CantidadTalla))>elem[t].stock) {
+										elem[t].cantidad=elem[t].stock*1;
+										ContadorColor+=elem[t].stock*1;
+									}
+									else
+									{
+										elem[t].cantidad=$scope.ColorMasivo[x].cantidad*CantidadTalla;
+										ContadorColor+=$scope.ColorMasivo[x].cantidad*CantidadTalla;
+									}
+								}
+								else
+								{
+									ValidacionEstadoCompleto=false;
+									CantidadTalla-=0.5
+									if (elem[t].estadoID==4003 && (($scope.ColorMasivo[x].cantidad*CantidadTalla))>elem[t].stock) {
+										elem[t].cantidad=elem[t].stock*1;
+										ContadorColor+=elem[t].stock*1;
+									}
+									else
+									{
+										elem[t].cantidad=$scope.ColorMasivo[x].cantidad*CantidadTalla;
+										ContadorColor+=$scope.ColorMasivo[x].cantidad*CantidadTalla;
+									}
+								}
+							}	
+						}
 					}
-				}
-				if (CantidadTalla>0) {
-					$scope.tallas[InidicadorArray].detalle2=elem;
-				}
-				if (CantidadTalla % 1 == 0 && CantidadTalla>0 && ValidacionEstadoCompleto) {
-					
-					if (ContadorColor==(parseInt(CantidadTalla.toString())*12)) {
-						$scope.tallas[InidicadorArray].estadoextension2=1;
+					if (CantidadTalla>0) {
+						$scope.tallas[InidicadorArray].detalle2=elem;
 					}
-					else
-					{
-						if (CantidadTalla==0) {
-							$scope.tallas[InidicadorArray].estadoextension2=3;	
-						}else
-						{
-							$scope.tallas[InidicadorArray].estadoextension2=2;		
-						}	
-					}
-				}
-				else
-				{
 
-					if (CantidadTalla==0 && $scope.tallas[InidicadorArray].cantidad==0) {
-						$scope.tallas[InidicadorArray].estadoextension2=3;	
-					}else
-					{
-						$scope.tallas[InidicadorArray].estadoextension2=2;	
-					}
-				}
-				
 				}
 				ContadorColor=0;
-				
-
-				
 				$scope.calcularDireferenciaTallasCalor();
 			})			
 		}
@@ -1647,47 +1813,43 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 						for (var x=0;x<$scope.ColorMasivo.length;x++) {
 							if (elem[t].extencionDetalle2ID==$scope.ColorMasivo[x].extencionDetalle2ID) {
 								if (CantidadTalla % 1 == 0) {
-									elem[t].cantidad=$scope.ColorMasivo[x].cantidad*CantidadTalla;
-									ContadorColor+=$scope.ColorMasivo[x].cantidad*CantidadTalla;
+									if (elem[t].estadoID==4003 && (($scope.ColorMasivo[x].cantidad*CantidadTalla))>elem[t].stock) {
+										elem[t].cantidad=elem[t].stock*1;
+										ContadorColor+=elem[t].stock*1;
+									}
+									else
+									{
+										elem[t].cantidad=$scope.ColorMasivo[x].cantidad*CantidadTalla;
+										ContadorColor+=$scope.ColorMasivo[x].cantidad*CantidadTalla;
+									}
 								}
 								else
 								{
 									ValidacionEstadoCompleto=false;
-									//CantidadTalla-=0.5
-									elem[t].cantidad=$scope.ColorMasivo[x].cantidad*(CantidadTalla-0.5);
-									ContadorColor+=$scope.ColorMasivo[x].cantidad*(CantidadTalla-0.5);
+									if (elem[t].estadoID==4003 && (($scope.ColorMasivo[x].cantidad*(CantidadTalla-0.5)))>elem[t].stock) {
+										elem[t].cantidad=elem[t].stock*1;
+										ContadorColor+=elem[t].stock*1;
+									}
+									else
+									{
+										elem[t].cantidad=$scope.ColorMasivo[x].cantidad*(CantidadTalla-0.5);
+										ContadorColor+=$scope.ColorMasivo[x].cantidad*(CantidadTalla-0.5);
+									}
+									
 								}
 							}	
 						}
 					}
-					debugger
-					if (CantidadTalla % 1 == 0 && CantidadTalla>0 && ValidacionEstadoCompleto) {
-						if (ContadorColor==(parseInt(CantidadTalla.toString())*12)) {
-							$scope.tallas[InidicadorArray].estadoextension2=1;
-						}
-						else
-						{
-							if (CantidadTalla==0) {
-								$scope.tallas[InidicadorArray].estadoextension2=3;	
-							}else
-							{
-								$scope.tallas[InidicadorArray].estadoextension2=2;		
-							}	
-						}
-					}
-					else
-					{
-						if (CantidadTalla==0) {
-							$scope.tallas[InidicadorArray].estadoextension2=3;	
-						}else
-						{
-							$scope.tallas[InidicadorArray].estadoextension2=2;	
-						}
-					}
+
 					ContadorColor=0;
 					if (CantidadTalla>0) {
 						$scope.tallas[InidicadorArray].detalle2=elem;
 					}	
+					if (CantidadTalla % 1 != 0) {
+						$scope.AgregarColoresMTalla(InidicadorArray);
+					}
+					
+					$scope.calcularDireferenciaTallasCalor();
 				}
 				
 				
@@ -2489,7 +2651,8 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
                             "','"+DATOS_ENTIDADES_SINCRONIZACION[i][j].planKitID+
                             "','"+DATOS_ENTIDADES_SINCRONIZACION[i][j].itemExtGenID+
                             "','"+DATOS_ENTIDADES_SINCRONIZACION[i][j].rowid_erp+
-                            "','"+DATOS_ENTIDADES_SINCRONIZACION[i][j].stock+"' "; 
+                            "','"+DATOS_ENTIDADES_SINCRONIZACION[i][j].stock+
+                            "','"+DATOS_ENTIDADES_SINCRONIZACION[i][j].EstadoID+"' "; 
                             if (contador==499) {
                                 CRUD.Updatedynamic(stringSentencia)
                                 NewQuery=true;

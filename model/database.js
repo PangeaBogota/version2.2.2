@@ -2749,7 +2749,12 @@ app_angular.service('Factory', function ($webSql) {
         "stock": {
             "type": "text",
             "null": "NULL"
+        },
+        "estadoID": {
+            "type": "integer",
+            "null": "NULL"
         }
+
     })
 
 

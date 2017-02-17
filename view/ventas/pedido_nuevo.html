@@ -300,7 +300,7 @@
             <td>Tallas</td>
             <td>Cantidad</td>
             <!--<td>Stock</td>-->
-            <td><button class="btn btn-default" ng-click="TallasGenerales()">Docena</button> </td>
+            <td><button class="btn btn-primary" ng-click="TallasMediaDocena()">Media Docena</button><button class="btn btn-success" ng-click="TallasGenerales()">Docena</button> </td>
         </tr>
         <tr  ng-repeat="tallas in tallas">
             <td class="col-md-2 col-ms-2 col-xs-2">{{tallas.talla}}</td>
@@ -644,6 +644,73 @@
         </div>
         
         <div id="OpenModalColor" data-toggle="modal" data-target="#ColoresMasivoModal"></div>
+
+        <div id="ColoresMasivoModalMedia" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+            <div class="modal-dialog" style="padding-bottom:100px">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="">Asignacion Colores</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div id="testmodal" style="padding: 0px;">
+                            <form id="antoform" class="form-horizontal calender form-label-left" role="form">
+                                <div class="row" style="margin: 0px">
+                                    <div class="form-group col-md-12" style="margin: 1px">
+                                        Item: <strong>{{item.item_referencia1}}</strong> 
+                                    </div>
+                                     <div class="form-group col-md-12" style="margin: 1px">
+                                        Cantidad Restante: <strong>{{MediaDocenaCount}}</strong> 
+                                    </div>
+                                </div>
+                                <table class="table">
+                                    <tr>
+                                     <td></td>
+                                        <td>Color</td>
+                                       
+                                        <td>Cantidad</td>
+                                        
+                                    </tr>
+                                    <tr ng-repeat="extension in ColorMasivoMedia">
+                                    <td style="border: 1px solid #b6b6b6;background:{{extension.rgba}};">
+                                            
+                                            
+                                        </td>
+                                        <td>{{extension.extencionDetalle2ID}}</td>
+                                        
+                                        <td>
+                                             <div class=" input-group" style="max-width:160px"  >
+                                                <span class="input-group-btn"  ng-click="adicionarCantidadColorM(extension.extencionDetalle2ID,'RESTAR')">
+                                                    <button type="button" class="btn btn-default">
+                                                        <span class="glyphicon glyphicon-minus">
+                                                            
+                                                        </span>
+                                                    </button>
+                                                </span>
+                                                <input type="number" step="any" ng-model="extension.cantidad"  class="form-control text-center" readonly="readonly"  />
+                                                <span class="input-group-btn"  ng-click="adicionarCantidadColorM(extension.extencionDetalle2ID,'SUMAR')">
+                                                    <button type="button" class="btn btn-default">
+                                                        <span class="glyphicon glyphicon-plus">
+                                                        </span>
+                                                    </button>
+                                                </span>
+                                            </div>
+                                        </td>
+                                        
+                                    </tr>
+                                </table>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-danger antoclose" id="ModalMasivoMedia" style="margin:0px" ng-click=""  data-dismiss="modal">Salir</button>
+                    <button type="button" class="btn btn-success antoclose"  ng-click="AgregarColoresMasivoM()"  data-dismiss="modal">Confirmar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="OpenModalColorMedia" data-toggle="modal" data-target="#ColoresMasivoModalMedia"></div>
+
 
         <div id="Modalcolores" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
             <div class="modal-dialog" style="padding-bottom:100px">

@@ -1373,6 +1373,7 @@ app_angular.controller('sessionController',['bootbox','Conexion','$scope','$loca
                             else{
                                 stringSentencia+= "   UNION   ";
                             }
+                            debugger
                             stringSentencia+=  "  SELECT  '"+
                             DATOS_ENTIDADES_SINCRONIZACION[i][j].rowid+
                             "','"+DATOS_ENTIDADES_SINCRONIZACION[i][j].id_cia+
@@ -1398,7 +1399,8 @@ app_angular.controller('sessionController',['bootbox','Conexion','$scope','$loca
                             "','"+DATOS_ENTIDADES_SINCRONIZACION[i][j].planKitID+
                             "','"+DATOS_ENTIDADES_SINCRONIZACION[i][j].itemExtGenID+
                             "','"+DATOS_ENTIDADES_SINCRONIZACION[i][j].rowid_erp+
-                            "','"+DATOS_ENTIDADES_SINCRONIZACION[i][j].stock+"' "; 
+                            "','"+DATOS_ENTIDADES_SINCRONIZACION[i][j].stock+
+                            "','"+DATOS_ENTIDADES_SINCRONIZACION[i][j].EstadoID+"' "; 
                             if (contador==499) {
                                 CRUD.Updatedynamic(stringSentencia)
                                 NewQuery=true;
