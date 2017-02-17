@@ -905,12 +905,14 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 			$scope.openmodalBalance=false;
 			event.preventDefault();
 			$('#modalBalanceColores').click();
+
 			return;
 		}
 		if ($scope.ModalColorMasivo==true) {
 			$scope.ModalColorMasivo=false
 			$scope.AgregarColoresMasivo();
 			$('#ModalMasivo').click();
+			$scope.AgregarColoresMasivoM();
 			event.preventDefault();
 			$('#ModalMasivoMedia').click();
 			return;
