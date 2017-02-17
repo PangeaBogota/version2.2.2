@@ -493,6 +493,8 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 		$scope.itemDisabled=false;
 		$scope.Restante=12;
 		$scope.tallas=[];
+		$scope.MediaDocenaCount=6;
+		$scope.ColorMasivoMedia=[];
 		$scope.ColorMasivo=[];
 
 		CRUD.select("select distinct  e.itemID,item.item_referencia,e.extencionDetalle1ID as talla,0 as cantidad,0  as multiplo,ext1_d.erp_descripcion_corta,sum(e.stock) as stock from erp_items_extenciones  e inner join erp_items item on item.rowid=e.itemID inner join  erp_item_extencion1_detalle ext1_d on ext1_d.rowid_erp=e.extencionDetalle1ID where e.itemID='"+$scope.item.rowid_item+"'  group by e.itemID,item.item_referencia,e.extencionDetalle1ID,ext1_d.erp_descripcion_corta order by ext1_d.erp_descripcion_corta ",function(elem){
@@ -898,7 +900,7 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 		}
 	}
 	$scope.$on('$routeChangeStart', function(event,next, current) { 
-		
+		debugger
 		if ($scope.openmodalBalance==true) {
 			$scope.openmodalBalance=false;
 			event.preventDefault();
@@ -910,6 +912,7 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 			$scope.AgregarColoresMasivo();
 			$('#ModalMasivo').click();
 			event.preventDefault();
+			$('#ModalMasivoMedia').click();
 			return;
 		}
 		if ($scope.ModalColorOpen==true) 
@@ -1101,6 +1104,8 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 		}
 		$scope.Restante=12
 		$scope.ColorMasivo=[];
+		$scope.MediaDocenaCount=6;
+		$scope.ColorMasivoMedia=[];
 		$scope.item=[];
 		$scope.SearchItem='';
 		$scope.cantidadBase='';

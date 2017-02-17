@@ -350,7 +350,7 @@
 
 <div class="form-group" >
     <label for="descripcion">Descripcion:</label> 
-    <textarea class="form-control" rows="4" id="descripcion" ng-model="Variables.descripcion"></textarea>
+    <textarea class="form-control" rows="4" id="descripcion" ng-model="Variables.descripcion" maxlength="12"></textarea>
     
 </div>
 <div class="form-actions">
@@ -435,7 +435,7 @@
                                 <div class="form-group">
                                     <label >Observaciones <span ></span>
                                     </label>
-                                    <textarea class="form-control" rows="2" id="descripcion" ng-model="pedidos.observaciones" ></textarea>
+                                    <textarea class="form-control" rows="2" id="descripcion" ng-model="pedidos.observaciones" maxlength="1990" ></textarea>
                                 </div>
                             </form>
                             <div class="form-actions">
