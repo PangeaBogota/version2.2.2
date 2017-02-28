@@ -639,6 +639,7 @@ app_angular.controller('sessionController',['bootbox','Conexion','$scope','$loca
             CRUD.Updatedynamic("delete from erp_item_extencion2_detalle");
             CRUD.Updatedynamic("delete from erp_items_extenciones");
             CRUD.Updatedynamic("delete from t_pedidos_detalle_web");
+            CRUD.Updatedynamic("delete from t_pedidos_detalle_detalle_web");
             CRUD.Updatedynamic("delete from t_pedidos_web");
             
             //
@@ -918,6 +919,27 @@ app_angular.controller('sessionController',['bootbox','Conexion','$scope','$loca
                             "','"+DATOS_ENTIDADES_SINCRONIZACION[i][j].ind_disabled+
                             "','"+DATOS_ENTIDADES_SINCRONIZACION[i][j].custom2+
                             "','"+DATOS_ENTIDADES_SINCRONIZACION[i][j].custom3+"' "; 
+                            if (contador==499) {
+                                CRUD.Updatedynamic(stringSentencia)
+                                NewQuery=true;
+                                stringSentencia="";
+                                contador=0;
+                            }
+                        }
+                        else if (STEP_SINCRONIZACION[i] == ENTIDAD_PEDIDOS_COLORES  && DATOS_ENTIDADES_SINCRONIZACION[i].length!=0) {
+                            //CRUD.insert('erp_entidades_master',DATOS_ENTIDADES_SINCRONIZACION[i][j]);
+                            if (NewQuery) {
+                                stringSentencia=" insert into t_pedidos_detalle_detalle_web  ";
+                                NewQuery=false;
+                            }
+                            else{
+                                stringSentencia+= "   UNION   ";
+                            }
+                            stringSentencia+=  "  SELECT  '"+
+                            DATOS_ENTIDADES_SINCRONIZACION[i][j].rowid+
+                            "','"+DATOS_ENTIDADES_SINCRONIZACION[i][j].pedidoDetalle+
+                            "','"+DATOS_ENTIDADES_SINCRONIZACION[i][j].itemExtencion2Detalle+
+                            "','"+DATOS_ENTIDADES_SINCRONIZACION[i][j].cantidad+"' "; 
                             if (contador==499) {
                                 CRUD.Updatedynamic(stringSentencia)
                                 NewQuery=true;

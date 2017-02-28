@@ -352,7 +352,7 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
 				count="select count(*) as cantidadfrom vw_items_precios  where  rowid="+$scope.pedidos.rowid_lista_precios+"  and  item_codigo1 like '%"+$scope.filter.codigoitem+"%' and   (   item_referencia1 like '%"+$scope.filter.descripcionitem+"%'   or descripcion like '%"+$scope.filter.descripcionitem+"%' )  and    (tipo_inventario = '"+parm1.p1+"'  or  tipo_inventario = '"+parm1.p2+"')   order by rowid ";
 			}
 			else {
-				vista="select*from vw_items_precios  where  rowid="+$scope.pedidos.rowid_lista_precios+"  order by rowid ";
+				vista="select*from vw_items_precios  where  rowid="+$scope.pedidos.rowid_lista_precios+"  and    (tipo_inventario = '"+parm1.p1+"'  or  tipo_inventario = '"+parm1.p2+"')   order by rowid ";
 				count="select 100 as cantidad ";
 			}
 		}
@@ -2185,6 +2185,27 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
                                 contador=0;
                             }
                         }
+                        else if (STEP_SINCRONIZACION[i] == ENTIDAD_PEDIDOS_COLORES  && DATOS_ENTIDADES_SINCRONIZACION[i].length!=0) {
+                            //CRUD.insert('erp_entidades_master',DATOS_ENTIDADES_SINCRONIZACION[i][j]);
+                            if (NewQuery) {
+                                stringSentencia=" insert into t_pedidos_detalle_detalle_web  ";
+                                NewQuery=false;
+                            }
+                            else{
+                                stringSentencia+= "   UNION   ";
+                            }
+                            stringSentencia+=  "  SELECT  '"+
+                            DATOS_ENTIDADES_SINCRONIZACION[i][j].rowid+
+                            "','"+DATOS_ENTIDADES_SINCRONIZACION[i][j].pedidoDetalle+
+                            "','"+DATOS_ENTIDADES_SINCRONIZACION[i][j].itemExtencion2Detalle+
+                            "','"+DATOS_ENTIDADES_SINCRONIZACION[i][j].cantidad+"' "; 
+                            if (contador==499) {
+                                CRUD.Updatedynamic(stringSentencia)
+                                NewQuery=true;
+                                stringSentencia="";
+                                contador=0;
+                            }
+                        }
                         else if (STEP_SINCRONIZACION[i] == ENTIDAD_PUNTOS_ENVIO  && DATOS_ENTIDADES_SINCRONIZACION[i].length!=0) {
                             //CRUD.insert('erp_terceros_punto_envio',DATOS_ENTIDADES_SINCRONIZACION[i][j]);
                             if (NewQuery) {
@@ -2712,8 +2733,6 @@ app_angular.controller("pedidoController",['Conexion','$scope','$location','$htt
                 //$route.reload();
                 Mensajes('Sincronizado Con Exito','success','')
             },7000)
-            
-            
         },6000)
     }
 }]);
@@ -2756,20 +2775,24 @@ app_angular.controller("PedidosController",['Conexion','$scope','$route',functio
 		$scope.contadores.cont5=0;
 		$scope.tabla1='';
 		$scope.tabla2='';
+		$scope.origen='';
 		if (pedido.tablamobile==1) {
 			$scope.tabla1='t_pedidos';
 			$scope.tabla2='t_pedidos_detalle';
+			$scope.origen='MOBILE';
 		}
 		else
 		{
 			$scope.tabla1='t_pedidos_web';
 			$scope.tabla2='t_pedidos_detalle_web';	
+			$scope.origen='WEB';
 		}
 		var query1="select distinct dt.rowid_item,dt.linea_descripcion,dt.rowid_pedido,item.item_referencia,dt.empaque  from "+$scope.tabla2+" dt inner join erp_items item on item.rowid=dt.rowid_item where dt.rowid_pedido ='"+pedido.rowidpedido+"'";
 
 		CRUD.select(query1,function(elem){
 			
 			elem.tallas=[];
+			elem.origen=$scope.origen;
 			elem.cantidadtotal=0;
 			$scope.detallespedido.unshift(elem);
 			$scope.contadores.cont1++;
@@ -3023,7 +3046,66 @@ app_angular.controller("PedidosController",['Conexion','$scope','$route',functio
 
 		
 	}
-	
+	$scope.ItemModal=[];
+	$scope.ColoresModal=[];
+	$scope.ModalColoreOpen=false;
+	$scope.ModalItem=function(item){
+		if (item.origen=="WEB") {
+			$scope.ColoresModal=[];
+			$scope.ModalColoreOpen=true;
+			$('#ColoresAgregados').click();
+			$scope.ItemModal=[];
+			$scope.ItemModal=angular.copy(item)	;
+			for (var i = 0; i < $scope.ItemModal.tallas.length; i++) {
+				if ( $scope.ItemModal.tallas[i].cantidad>0) {
+					$scope.ItemModal.tallas[i].colores=[];
+					CRUD.selectAllinOne("select  '"+i+"' as array,c.*,b.cantidad from t_pedidos_detalle_web a inner join t_pedidos_detalle_detalle_web  b on b.pedidoDetalle=a.rowid left join erp_item_extencion2_detalle c on c.rowid_erp=b.itemExtension2Detalle  where a.rowid_pedido='"+item.rowid_pedido+"' and  a.rowid_item='"+item.rowid_item+"'  and a.item_ext1='"+$scope.ItemModal.tallas[i].talla+"'",function(elem){
+						if (elem.length>0) {
+							$scope.ItemModal.tallas[elem[0].array].colores=elem;
+						}
+					})
+				}
+				else
+				{
+					$scope.ItemModal.tallas[i]=[];			
+				}
+			}
+		}
+		else
+		{
+			$scope.ColoresModal=[];
+			$scope.ModalColoreOpen=true;
+			$('#ColoresAgregados').click();
+			$scope.ItemModal=[];
+			$scope.ItemModal=angular.copy(item)	;
+			for (var i = 0; i < $scope.ItemModal.tallas.length; i++) {
+				if ( $scope.ItemModal.tallas[i].cantidad>0) {
+					$scope.ItemModal.tallas[i].colores=[];
+					CRUD.selectAllinOne("select  '"+i+"' as array,c.*,b.cantidad from t_pedidos_detalle a inner join t_pedidos_detalle_detalle  b on b.pedidoDetalle=a.rowid left join erp_item_extencion2_detalle c on c.rowid_erp=b.itemExtension2Detalle  where a.rowid_pedido='"+item.rowid_pedido+"' and  a.rowid_item='"+item.rowid_item+"'  and a.item_ext1='"+$scope.ItemModal.tallas[i].talla+"'",function(elem){
+						if (elem.length>0) {
+							$scope.ItemModal.tallas[elem[0].array].colores=elem;
+						}
+					})
+				}
+				else
+				{
+					$scope.ItemModal.tallas[i]=[];	
+					$scope.ItemModal.tallas[i].cantidad=0;		
+				}
+			}
+		}
+		
+	}
+	$scope.$on('$routeChangeStart', function(event,next, current) { 
+		if ($scope.ModalColoreOpen==true) {
+			$scope.ModalColoreOpen=false;
+			event.preventDefault();
+			$('#modalBalanceColores').click();
+			return;
+		}
+		
+		  
+	 });
 }]);
 
 

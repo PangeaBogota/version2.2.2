@@ -321,7 +321,27 @@ app_angular.service('Factory', function ($webSql) {
 
 
     })
+    db.createTable('t_pedidos_detalle_detalle_web',{
+        "rowid": {
+            "type": "INTEGER",
+            "null": "NOT NULL",
+            "primary": true,
+            "auto_increment": true 
+        },
+        "pedidoDetalle": {
+            "type": "INTEGER",
+            "null": "NULL"
+        },
+        "itemExtension2Detalle": {
+            "type": "text",
+            "null": "NULL"
+        },
+        "cantidad": {
+            "type": "INTEGER",
+            "null": "NULL"
+        }
 
+    })
     db.createTable('t_pedidos_detalle_detalle',{
         "rowid": {
             "type": "INTEGER",

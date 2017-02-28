@@ -129,7 +129,7 @@
                                         <th class="column-title">Emp.</th>
                                     </thead>
                                     <tbody>
-                                        <tr ng-repeat="item in detallespedido">
+                                        <tr ng-click="ModalItem(item)" ng-repeat="item in detallespedido">
                                            <td>
                                                {{item.item_referencia}}
                                            </td>
@@ -197,4 +197,66 @@
         </div>
     </div>
     <div id="pedidoOpenModal" data-toggle="modal" data-target="#PedidoDetalle"></div>
+    <div id="Modalcolores" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+            <div class="modal-dialog" style="padding-bottom:100px">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="">Detalle Item</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div id="testmodal" style="padding: 0px;">
+                            <form id="antoform" class="form-horizontal calender form-label-left" role="form">
+                                <div class="row" style="margin: 0px">
+                                    <div class="form-group col-md-12" style="margin: 1px">
+                                         <label>
+                                        Item: <strong>{{ItemModal.linea_descripcion}}</strong> 
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin: 0px">
+                                    <div class="form-group col-md-4" style="margin: 1px">
+                                        <label>
+                                        Referencia: <strong>{{ItemModal.item_referencia}}</strong> 
+                                        </label>
+                                    </div>
+                                    <div class="form-group col-md-4" style="margin: 1px">
+                                        <label>
+                                        Empaque: <strong>{{ItemModal.empaque}}</strong> 
+                                        </label>
+                                    </div>
+                                    <div class="form-group col-md-4" style="margin: 1px">
+                                        <label>
+                                        Cantidad: <strong>{{ItemModal.cantidadtotal}}</strong> 
+                                        </label>
+                                    </div>
+                                </div>
+                                <div ng-repeat="item in ItemModal.tallas" ng-show="item.cantidad>0" >
+
+                                    <strong> Talla : {{item.talla}}</strong>
+                                    <div style="overflow-x:auto;" class="table-resposive" >
+                                    <table class="table table-striped responsive-utilities jambo_table bulk_action">
+                                        <tr>
+                                            <td ng-repeat="color in item.colores" ng-show="{{color.cantidad>0}}" style="border: 1px solid #b6b6b6;background:{{color.rgba}};" ></td>
+                                        </tr>
+                                        <tr>
+                                            <td ng-repeat="color in item.detalle2"  ng-show="{{color.cantidad>0}}">{{color.extencionDetalle2ID}} </td>
+                                        </tr>
+                                        <tr>
+                                            <td ng-repeat="color in item.detalle2"  ng-show="{{color.cantidad>0}}">{{color.cantidad}} </td>
+                                        </tr>
+                                    </table>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-danger antoclose" id="modalBalanceColores" style="margin:0px"  data-dismiss="modal">Salir</button>
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="ColoresAgregados" data-toggle="modal" data-target="#Modalcolores"></div>
 </div>
